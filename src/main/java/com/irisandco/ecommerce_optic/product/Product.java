@@ -19,6 +19,8 @@ public class Product {
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long  id;
 
+    private String cloudinaryImageId;
+
     @Column(name="name", table="products", nullable=false,  unique = true, length = 50)
     private String name;
 

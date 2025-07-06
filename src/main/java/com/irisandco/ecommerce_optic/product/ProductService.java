@@ -1,12 +1,17 @@
 package com.irisandco.ecommerce_optic.product;
 
+import com.irisandco.ecommerce_optic.cloudinary.CloudinaryResponse;
+import com.irisandco.ecommerce_optic.util.FileUploadUtil;
+import jakarta.transaction.Transactional;
 import com.irisandco.ecommerce_optic.category.*;
+import com.irisandco.ecommerce_optic.cloudinary.CloudinaryService;
 import com.irisandco.ecommerce_optic.exception.EntityAlreadyExistsException;
 import com.irisandco.ecommerce_optic.exception.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -17,10 +22,12 @@ public class ProductService {
 
     private final ProductRepository PRODUCT_REPOSITORY;
     private final CategoryService CATEGORY_SERVICE;
+    private final CloudinaryService CLOUDINARY_SERVICE;
 
-    public ProductService(ProductRepository productRepository, CategoryService categoryService) {
+    public ProductService(ProductRepository productRepository, CategoryService categoryService, CloudinaryService cloudinaryService) {
         this.PRODUCT_REPOSITORY = productRepository;
         this.CATEGORY_SERVICE = categoryService;
+        CLOUDINARY_SERVICE = cloudinaryService;
     }
 
     public List<ProductResponse> getAllProducts() {
@@ -129,6 +136,18 @@ public class ProductService {
     private List<ProductResponse> filterByMaxPrice(Double maxPrice) {
         return PRODUCT_REPOSITORY.findByPriceLessThanEqual(maxPrice).stream().map(product -> ProductMapper.toDto(product)).toList();
     }
+
+    @Transactional
+    public void uploadImage(final Long id, final MultipartFile file) {
+        final Product product = getProductById(id);
+        FileUploadUtil.assertAllowed(file, FileUploadUtil.IMAGE_PATTERN);
+        final String fileName = FileUploadUtil.getFileName(file.getOriginalFilename());
+        final CloudinaryResponse responseDTO = this.CLOUDINARY_SERVICE.uploadFile(file, fileName);
+        product.setImageUrl(responseDTO.getUrl());
+        product.setCloudinaryImageId(responseDTO.getPublicId());
+        this.PRODUCT_REPOSITORY.save(product);
+    }
+
     /**
      * Retrieves a list of products based on provided filter parameters.
      *
@@ -155,7 +174,7 @@ public class ProductService {
         );
         return PRODUCT_REPOSITORY.findAll(spec, pageable);
     }
-    }
+}
 
 
 

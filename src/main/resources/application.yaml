@@ -47,3 +47,14 @@ logging:
 #        zaxxer:
 #          hikari: DEBUG
   
+cloudinary:
+  cloud_name: ${CL_NAME}
+  api_key: ${CL_API_KEY}
+  api_secret: ${CL_API_SECRET}
+#  secure: true
+#  upload_preset: my_unsigned_preset
+#  resource_type: image
+#  default_transformations:
+#    quality: auto
+#    fetch_format: auto
+#    crop: limit

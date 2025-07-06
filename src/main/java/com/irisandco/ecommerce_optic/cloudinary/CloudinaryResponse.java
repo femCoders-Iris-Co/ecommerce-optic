@@ -1,4 +1,4 @@
-package com.irisandco.ecommerce_optic.product;
+package com.irisandco.ecommerce_optic.cloudinary;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

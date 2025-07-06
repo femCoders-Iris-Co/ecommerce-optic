@@ -16,7 +16,7 @@ public class CloudinaryService {
     private Cloudinary cloudinary;
 
     @Transactional
-    public CloudinaryDTO uploadFile(MultipartFile file, String fileName) {
+    public CloudinaryResponse uploadFile(MultipartFile file, String fileName) {
         try {
             final Map result = cloudinary.uploader().upload(file.getBytes(), Map.of("public_id", "optics/product" + fileName));
             return CloudinaryMapper.fromMap(result);

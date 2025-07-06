@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 
 import java.math.BigDecimal;
@@ -63,6 +64,13 @@ public class ProductController {
         }
 
         return new ResponseEntity<>(products, HttpStatus.OK);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> uploadProductImage(@PathVariable final Long id, @RequestParam final MultipartFile file) {
+        getProductById(id);
+        this.PRODUCT_SERVICE.uploadImage(id, file);
+        return ResponseEntity.ok("File uploaded successfully");
     }
 
     @GetMapping("/filters")

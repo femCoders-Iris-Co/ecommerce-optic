@@ -1,9 +1,8 @@
 package com.irisandco.ecommerce_optic.product;
 
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
+import com.irisandco.ecommerce_optic.category.Category;
+import jakarta.persistence.criteria.*;
+import org.hibernate.type.EntityType;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.math.BigDecimal;
@@ -27,12 +26,18 @@ public class ProductSpecifications {
                 }
 
                 if (categories != null && !categories.isEmpty()) {
-                    CriteriaBuilder.In<String> inClause = cb.in(root.get("category"));
-                    for (String category : categories) {
-                        inClause.value(category);
+                    // Join the categories collection
+                    Join<EntityType, Category> categoriesJoin = root.join("categories");
+                    // Join on the 'name' field of Category
+                    Path<String> categoryNamePath = categoriesJoin.get("name");
+                    // Create an IN predicate on the category names
+                    CriteriaBuilder.In<String> inClause = cb.in(categoryNamePath);
+                    for (String categoryName : categories) {
+                        inClause.value(categoryName);
                     }
                     predicates.add(inClause);
                 }
+
 
                 if (minimumPrice != null) {
                     predicates.add(cb.ge(root.get("price"), minimumPrice));

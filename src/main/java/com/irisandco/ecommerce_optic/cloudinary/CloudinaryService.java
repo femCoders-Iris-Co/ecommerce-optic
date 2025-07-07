@@ -21,6 +21,7 @@ public class CloudinaryService {
             final Map result = cloudinary.uploader().upload(file.getBytes(), Map.of("public_id", "optics/product" + fileName));
             return CloudinaryMapper.fromMap(result);
         } catch (Exception e) {
+            e.printStackTrace();
             throw new RuntimeException("Failed to upload file");
         }
     }

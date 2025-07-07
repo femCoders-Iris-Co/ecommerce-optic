@@ -20,7 +20,7 @@ public class FileUploadUtil {
 
     public static final String DATE_FORMAT = "yyyyMMddHHmmss";
 
-    public static final String FILE_NAME_FORMAT = "%s_%s_%s";
+    public static final String FILE_NAME_FORMAT = "%s_%s";
 
     public static boolean isAllowedExtension(final String fileName, final String pattern) {
         final Matcher matcher = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE).matcher(fileName);

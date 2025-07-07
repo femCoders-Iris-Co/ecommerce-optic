@@ -66,7 +66,7 @@ public class ProductController {
         return new ResponseEntity<>(products, HttpStatus.OK);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/image/{id}")
     public ResponseEntity<?> uploadProductImage(@PathVariable final Long id, @RequestParam final MultipartFile file) {
         getProductById(id);
         this.PRODUCT_SERVICE.uploadImage(id, file);

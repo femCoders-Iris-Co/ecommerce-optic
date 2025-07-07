@@ -1,10 +1,15 @@
 package com.irisandco.ecommerce_optic.product;
 
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -58,5 +63,23 @@ public class ProductController {
         }
 
         return new ResponseEntity<>(products, HttpStatus.OK);
+    }
+
+    @GetMapping("/filters")
+    public ResponseEntity<Page<ProductResponse>> getFilteredProducts(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) List<String> categoryNames,
+            @RequestParam(required = false) BigDecimal minPrice,
+            @RequestParam(required = false) BigDecimal maxPrice,
+            @RequestParam(required = false) boolean featured,
+            Pageable pageable) {
+        Page<Product> products = PRODUCT_SERVICE.getFilteredProducts(name, categoryNames, minPrice, maxPrice, featured, pageable);
+        List<ProductResponse> productResponses = products.stream().map(ProductMapper::toDto).toList();
+        Page<ProductResponse> productResponses1 = new PageImpl<>(productResponses, pageable, productResponses.size());
+        if (products.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+
+        return new ResponseEntity<>(productResponses1, HttpStatus.OK);
     }
 }

@@ -3,8 +3,12 @@ package com.irisandco.ecommerce_optic.product;
 import com.irisandco.ecommerce_optic.category.*;
 import com.irisandco.ecommerce_optic.exception.EntityAlreadyExistsException;
 import com.irisandco.ecommerce_optic.exception.EntityNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -124,6 +128,32 @@ public class ProductService {
 
     private List<ProductResponse> filterByMaxPrice(Double maxPrice) {
         return PRODUCT_REPOSITORY.findByPriceLessThanEqual(maxPrice).stream().map(product -> ProductMapper.toDto(product)).toList();
+    }
+    /**
+     * Retrieves a list of products based on provided filter parameters.
+     *
+     * @param name            the product name to filter by (optional)
+     * @param categories      list of categories to filter by (optional)
+     * @param minimumPrice    minimum price filter (optional)
+     * @param maximumPrice    maximum price filter (optional)
+     * @param isFeatured      whether the product is featured (optional)
+     * @param pageable        pagination information
+     * @return                list of products matching the filters
+     */
+    public Page<Product> getFilteredProducts(String name,
+                                             List<String> categories,
+                                             BigDecimal minimumPrice,
+                                             BigDecimal maximumPrice,
+                                             Boolean isFeatured,
+                                             Pageable pageable) {
+        Specification<Product> spec = ProductSpecifications.filterByParams(
+                name,
+                categories,
+                minimumPrice,
+                maximumPrice,
+                isFeatured
+        );
+        return PRODUCT_REPOSITORY.findAll(spec, pageable);
     }
     }
 
